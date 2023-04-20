@@ -1,6 +1,11 @@
 import { defineConfig } from 'sanity';
 import { schemaTypes } from './schemas';
 import { deskTool } from 'sanity/desk';
+import { structure } from './desk';
+
+import { colorInput } from '@sanity/color-input';
+import { imageHotspotArrayPlugin } from 'sanity-plugin-hotspot-array';
+import { customDocumentActions } from './plugins/customDocumentActions';
 
 // Actions available for singleton documents
 const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
@@ -15,20 +20,10 @@ export default defineConfig({
 	dataset: import.meta.env.VITE_SANITY_DATASET,
 	title: import.meta.env.VITE_SANITY_PROJECT_TITLE,
 	plugins: [
-		deskTool({
-			structure: (S) =>
-				S.list()
-					.title('Content')
-					.items([
-						// Set Singleton in Desk Tool
-						S.listItem()
-							.title('Settings')
-							.id('settings')
-							.child(S.document().schemaType('settings').documentId('settings')),
-						// Regular document types
-						S.documentTypeListItem('page').title('pages')
-					])
-		})
+		deskTool({ structure }),
+		colorInput(),
+		imageHotspotArrayPlugin(),
+		customDocumentActions()
 	],
 	schema: {
 		types: schemaTypes,
