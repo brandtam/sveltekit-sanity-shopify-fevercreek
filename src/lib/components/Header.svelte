@@ -162,9 +162,9 @@
 		</div>
 	{/if}
 
-	<header class="relative bg-white">
+	<header class="relative border-b border-gray-200 bg-white">
 		<nav aria-label="Top" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<div class="border-b border-gray-200">
+			<div class="">
 				<div class="flex h-16 items-center justify-between">
 					<div class="flex flex-1 items-center lg:hidden">
 						<button
