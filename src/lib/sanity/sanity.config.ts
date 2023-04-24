@@ -1,17 +1,17 @@
-import { defineConfig } from 'sanity';
+import { defineConfig, isDev } from 'sanity';
 import { schemaTypes } from './schemas';
 import { deskTool } from 'sanity/desk';
 import { structure } from './desk';
 
+import { visionTool } from '@sanity/vision';
 import { colorInput } from '@sanity/color-input';
 import { imageHotspotArrayPlugin } from 'sanity-plugin-hotspot-array';
+import { media, mediaAssetSource } from 'sanity-plugin-media';
 import { customDocumentActions } from './plugins/customDocumentActions';
 
-// Actions available for singleton documents
-const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
+import type { AssetSource } from 'sanity';
 
-// Document types that should only have a single instance
-const singletonTypes = new Set(['settings']);
+const devOnlyPlugins = [visionTool()];
 
 // Sanity configuration
 export default defineConfig({
@@ -23,18 +23,23 @@ export default defineConfig({
 		deskTool({ structure }),
 		colorInput(),
 		imageHotspotArrayPlugin(),
-		customDocumentActions()
+		customDocumentActions(),
+		media(),
+		...(isDev ? devOnlyPlugins : [])
 	],
 	schema: {
-		types: schemaTypes,
-		// Special template for singleton documents
-		templates: (templates) => templates.filter(({ schemaType }) => !singletonTypes.has(schemaType))
+		types: schemaTypes
 	},
-	document: {
-		// For singleton types, filter out the `create` action
-		actions: (input, context) =>
-			singletonTypes.has(context.schemaType)
-				? input.filter(({ action }) => action && singletonActions.has(action))
-				: input
+	form: {
+		file: {
+			assetSources: (previousAssetSources: AssetSource[]) => {
+				return previousAssetSources.filter((assetSource) => assetSource !== mediaAssetSource);
+			}
+		},
+		image: {
+			assetSources: (previousAssetSources: AssetSource[]) => {
+				return previousAssetSources.filter((assetSource) => assetSource === mediaAssetSource);
+			}
+		}
 	}
 });

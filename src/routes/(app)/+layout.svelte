@@ -1,13 +1,10 @@
 <script lang="ts">
+	import Header from '$lib/components/Header.svelte';
 	import '../../app.css';
 
 	export let data;
-	console.log(`data: ${JSON.stringify(data)}`);
-	// const { greeting } = data.settings[0];
-	// console.log(`greeting: ${greeting}`);
-
-	// I want this data in the layout template so that it can be used in the header
-	// and meta tags, etc
 </script>
+
+<Header products={data.products} />
 
 <slot />

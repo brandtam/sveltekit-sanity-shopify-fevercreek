@@ -2,12 +2,11 @@ import type { LayoutServerLoad } from './$types';
 import { client } from '$lib/utils/sanity';
 
 export const load = (async () => {
-	const data = await client.fetch(`*[_type == "products"]`);
+	const data = await client.fetch(`*[_type == "product"]`);
 
 	if (data) {
-		console.log(`data: ${JSON.stringify(data)}`);
 		return {
-			settings: data
+			products: data
 		};
 	}
 	return {
