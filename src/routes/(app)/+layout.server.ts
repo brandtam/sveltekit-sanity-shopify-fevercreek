@@ -1,16 +1,33 @@
 import type { LayoutServerLoad } from './$types';
 import { client } from '$lib/utils/sanity';
+// import { createShopifyCart } from '$lib/utils/shopify';
 
 export const load = (async () => {
-	const data = await client.fetch(`*[_type == "product"]`);
-
-	if (data) {
+	const sanityProducts = async () => {
+		const data = await client.fetch(`*[_type == "product"]`);
+		if (data) {
+			return data;
+		}
 		return {
-			products: data
+			status: 500,
+			body: new Error('Failed to fetch products')
 		};
-	}
+	};
+
+	// const shopifyCart = async () => {
+	// 	const data = await createShopifyCart();
+
+	// 	if (data.body.data.cartCreate.cart) {
+	// 		return data.body.data.cartCreate.cart;
+	// 	}
+	// 	return {
+	// 		status: 500,
+	// 		body: new Error('Failed to fetch cart')
+	// 	};
+	// };
+
 	return {
-		status: 500,
-		body: new Error('Internal Server Error')
+		// shopifyCart: shopifyCart(),
+		products: sanityProducts()
 	};
 }) satisfies LayoutServerLoad;

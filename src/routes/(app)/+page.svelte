@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Hero from '$lib/components/Hero.svelte';
-
-	export let data;
+	import Hero from '$lib/components/Hero/Hero.svelte';
 </script>
 
 <Hero />

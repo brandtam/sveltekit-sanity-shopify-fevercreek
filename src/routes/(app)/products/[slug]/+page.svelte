@@ -1,18 +1,32 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { addToCart } from '$lib/utils/cart';
+	import { browser } from '$app/environment';
 
 	export let data: PageData;
 	$: product = data.product;
 
-	let selected: number = 1;
-	let openAccordian: number = 0;
+	$: displayProduct = {
+		id: data.product.gid,
+		title: data.product.title,
+		description: data.product.description,
+		image: data.product.previewImageUrl,
+		price: data.product.priceRange.maxVariantPrice
+	};
 
-	function toggleAccordian(index: number) {
-		if (openAccordian === index) {
-			openAccordian = 0;
+	let selected: number = 1;
+	let openAccordion: number = 0;
+
+	function toggleAccordion(index: number) {
+		if (openAccordion === index) {
+			openAccordion = 0;
 		} else {
-			openAccordian = index;
+			openAccordion = index;
 		}
+	}
+	if (browser) {
+		console.log('product', data.product);
+		console.log('displayProduct', displayProduct);
 	}
 </script>
 
@@ -33,7 +47,7 @@
 							role="tab"
 							type="button"
 						>
-							<span class="sr-only">Angled view</span>
+							<span class="sr-only">Preview Image</span>
 							<span class="absolute inset-0 overflow-hidden rounded-md">
 								<img
 									src={product.previewImageUrl}
@@ -58,7 +72,7 @@
 					<div id="tabs-2-panel-1" aria-labelledby="tabs-2-tab-1" role="tabpanel" tabindex="0">
 						<img
 							src={product.previewImageUrl}
-							alt="Angled front view with bag zipped and handles upright."
+							alt="Alt Text"
 							class="h-full w-full object-cover object-center sm:rounded-lg"
 						/>
 					</div>
@@ -91,6 +105,8 @@
 				<form class="mt-6">
 					<div class="mt-10 flex">
 						<button
+							on:click={() =>
+								addToCart({ product: displayProduct, variantId: product.gid, quantity: 1 })}
 							type="submit"
 							class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
 							>Add to bag</button
@@ -127,20 +143,20 @@
 							<h3>
 								<!-- Expand/collapse question button -->
 								<button
-									on:click={() => toggleAccordian(1)}
+									on:click={() => toggleAccordion(1)}
 									type="button"
 									class="group relative flex w-full items-center justify-between py-6 text-left"
 									aria-controls="disclosure-1"
 									aria-expanded="false"
 								>
 									<span
-										class="{openAccordian === 1
+										class="{openAccordion === 1
 											? 'text-indigo-600'
 											: 'text-gray-900'} text-sm font-medium">Specs</span
 									>
 									<span class="ml-6 flex items-center">
 										<svg
-											class="{openAccordian === 1
+											class="{openAccordion === 1
 												? 'hidden'
 												: 'block'} h-6 w-6 text-gray-400 group-hover:text-gray-500"
 											fill="none"
@@ -156,7 +172,7 @@
 											/>
 										</svg>
 										<svg
-											class="{openAccordian === 1
+											class="{openAccordion === 1
 												? 'block'
 												: 'hidden'} h-6 w-6 text-indigo-400 group-hover:text-indigo-500"
 											fill="none"
@@ -171,7 +187,7 @@
 								</button>
 							</h3>
 							<div
-								class="{openAccordian === 1 ? 'block' : 'hidden'} prose prose-sm pb-6"
+								class="{openAccordion === 1 ? 'block' : 'hidden'} prose prose-sm pb-6"
 								id="disclosure-1"
 							>
 								<ul>
