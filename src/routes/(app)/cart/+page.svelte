@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { cartItemsStore } from '$lib/stores';
+	import { cartItemsStore, cartSubtotal, cartCount } from '$lib/stores';
 	import { removeFromCart } from '$lib/utils/cart';
 
-	console.log($cartItemsStore);
+	// console.log('cartItemsStore', $cartItemsStore);
 
 	const showQuantity = false;
+	$: shippingEstimate = Number($cartCount) * 150 || 0;
+	$: totalEstimate = $cartSubtotal + shippingEstimate;
 </script>
 
 <div class="bg-white">
@@ -18,11 +20,13 @@
 					{#each $cartItemsStore as item}
 						<li class="flex py-6 sm:py-10">
 							<div class="flex-shrink-0">
-								<img
-									src={item.product.image}
-									alt="Front of men&#039;s Basic Tee in sienna."
-									class="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
-								/>
+								<a href="/products/{item.productHandle}">
+									<img
+										src={item.image}
+										alt="Main Product"
+										class="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
+									/>
+								</a>
 							</div>
 
 							<div class="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
@@ -30,21 +34,24 @@
 									<div>
 										<div class="flex justify-between">
 											<h3 class="text-sm">
-												<a href="#" class="font-medium text-gray-700 hover:text-gray-800"
-													>{item.product.title}</a
+												<a
+													href="/products/{item.productHandle}"
+													class="font-medium text-gray-700 hover:text-gray-800"
+													>{item.productTitle}</a
 												>
 											</h3>
 										</div>
-										<!-- <div class="mt-1 flex text-sm">
-											<p class="text-gray-500">Sienna</p>
-											<p class="ml-4 border-l border-gray-200 pl-4 text-gray-500">Large</p>
-										</div> -->
-										<p class="mt-1 text-sm font-medium text-gray-900">${item.product.price}</p>
+										<div class="mt-1 flex text-sm">
+											<p class="text-gray-500">{item.variantTitle}</p>
+										</div>
+										<p class="mt-1 text-sm font-medium text-gray-900">
+											${Number(item.price).toFixed(2)}
+										</p>
 									</div>
 
-									{#if showQuantity}
-										<div class="mt-4 justify-self-end sm:mt-0 sm:pr-9">
-											<label for="quantity-0" class="sr-only">Quantity, {item.product.title}</label>
+									<div class="mt-4 justify-self-end sm:mt-0 sm:pr-9">
+										{#if showQuantity}
+											<label for="quantity-0" class="sr-only">Quantity, {item.productTitle}</label>
 											<select
 												bind:value={item.quantity}
 												id="quantity-0"
@@ -55,33 +62,31 @@
 													<option value={index + 1}>{index + 1}</option>
 												{/each}
 											</select>
-
-											<div class="absolute right-0 top-0">
-												<button
-													on:click={() =>
-														removeFromCart({
-															product: item.product,
-															variantId: item.variantId,
-															quantity: item.quantity
-														})}
-													type="button"
-													class="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+										{/if}
+										<div class="absolute right-0 top-0">
+											<button
+												on:click={() =>
+													removeFromCart({
+														variantId: item.variantId,
+														quantity: item.quantity
+													})}
+												type="button"
+												class="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+											>
+												<span class="sr-only">Remove</span>
+												<svg
+													class="h-5 w-5"
+													viewBox="0 0 20 20"
+													fill="currentColor"
+													aria-hidden="true"
 												>
-													<span class="sr-only">Remove</span>
-													<svg
-														class="h-5 w-5"
-														viewBox="0 0 20 20"
-														fill="currentColor"
-														aria-hidden="true"
-													>
-														<path
-															d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
-														/>
-													</svg>
-												</button>
-											</div>
+													<path
+														d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+													/>
+												</svg>
+											</button>
 										</div>
-									{/if}
+									</div>
 								</div>
 
 								<p class="mt-4 flex space-x-2 text-sm text-gray-700">
@@ -115,7 +120,7 @@
 				<dl class="mt-6 space-y-4">
 					<div class="flex items-center justify-between">
 						<dt class="text-sm text-gray-600">Subtotal</dt>
-						<dd class="text-sm font-medium text-gray-900">$99.00</dd>
+						<dd class="text-sm font-medium text-gray-900">${$cartSubtotal.toFixed(2)}</dd>
 					</div>
 					<div class="flex items-center justify-between border-t border-gray-200 pt-4">
 						<dt class="flex items-center text-sm text-gray-600">
@@ -131,7 +136,7 @@
 								</svg>
 							</a>
 						</dt>
-						<dd class="text-sm font-medium text-gray-900">$5.00</dd>
+						<dd class="text-sm font-medium text-gray-900">${shippingEstimate.toFixed(2)}</dd>
 					</div>
 					<div class="flex items-center justify-between border-t border-gray-200 pt-4">
 						<dt class="flex text-sm text-gray-600">
@@ -147,11 +152,11 @@
 								</svg>
 							</a>
 						</dt>
-						<dd class="text-sm font-medium text-gray-900">$8.32</dd>
+						<dd class="text-sm font-medium text-gray-900">calculated at checkout</dd>
 					</div>
 					<div class="flex items-center justify-between border-t border-gray-200 pt-4">
 						<dt class="text-base font-medium text-gray-900">Order total</dt>
-						<dd class="text-base font-medium text-gray-900">$112.32</dd>
+						<dd class="text-base font-medium text-gray-900">${totalEstimate.toFixed(2)}</dd>
 					</div>
 				</dl>
 

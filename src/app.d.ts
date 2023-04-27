@@ -41,15 +41,21 @@ declare global {
 		id: string;
 		lines: ShopifyCartLine[];
 	};
-	type Product = {
-		id: string;
-		title: string;
-		description: string;
-		image: string;
-		price: string;
-	};
 	type CartItem = {
 		product: Product;
+		variantId: string;
+		quantity: number;
+	};
+	type CartLineItem = {
+		variantId: string;
+		quantity: number;
+		image: string;
+		productTitle: string;
+		variantTitle: string;
+		price: string;
+		productHandle: string;
+	};
+	type RemoveLineItem = {
 		variantId: string;
 		quantity: number;
 	};

@@ -2,12 +2,15 @@ import { writable, get } from 'svelte/store';
 
 export const openSide = writable<boolean>(false);
 export const cartCount = writable<number>(0);
-export const cartItemsStore = writable<CartItem[]>([]);
+export const cartSubtotal = writable<number>(0);
+export const cartItemsStore = writable<CartLineItem[]>([]);
 export const cartStore = writable<Cart | null>(null);
 
 // add to cart
-export const addToCartItemsStore = (product: Product, variantId: string, quantity: number) => {
+export const addToCartItemsStore = (lineItem: CartLineItem) => {
+	const { variantId, quantity } = lineItem;
 	cartCount.update((n) => n + quantity);
+	cartSubtotal.update((n) => n + quantity * Number(lineItem.price));
 
 	const items = get(cartItemsStore);
 	const itemPosition = items.findIndex((item) => item.variantId === variantId);
@@ -15,7 +18,7 @@ export const addToCartItemsStore = (product: Product, variantId: string, quantit
 	if (itemPosition !== -1) {
 		items[itemPosition].quantity += quantity;
 	} else {
-		items.push({ product, variantId, quantity });
+		items.push(lineItem);
 	}
 	cartItemsStore.update(() => {
 		return items;
@@ -24,10 +27,11 @@ export const addToCartItemsStore = (product: Product, variantId: string, quantit
 
 // remove from cart
 export const removeFromCartStore = (variantId: string, quantity: number) => {
-	cartCount.update((n) => n - quantity);
-
 	const items = get(cartItemsStore);
 	const itemPosition = items.findIndex((item) => item.variantId === variantId);
+
+	cartCount.update((n) => n - quantity);
+	cartSubtotal.update((n) => n - quantity * Number(items[itemPosition].price));
 
 	if (itemPosition !== -1) {
 		if (items[itemPosition].quantity <= quantity) {

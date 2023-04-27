@@ -3,7 +3,14 @@ import { client } from '$lib/utils/sanity';
 
 export const load = (async ({ fetch, params }) => {
 	const product = await client.fetch(
-		`*[_type == "product" && store.slug.current == '${params.slug}']`
+		`*[_type == "product" && store.slug.current == '${params.slug}']{
+			...,
+			store {
+				...,
+				title,
+				variants[]->
+			}
+		}`
 	);
 
 	if (product) {

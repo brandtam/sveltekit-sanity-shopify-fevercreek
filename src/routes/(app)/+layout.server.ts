@@ -4,7 +4,16 @@ import { client } from '$lib/utils/sanity';
 
 export const load = (async () => {
 	const sanityProducts = async () => {
-		const data = await client.fetch(`*[_type == "product"]`);
+		const data = await client.fetch(
+			`*[_type == "product" && store.status == 'active']{
+				...,
+				store {
+					...,
+					title,
+					variants[]->
+				}
+			}`
+		);
 		if (data) {
 			return data;
 		}

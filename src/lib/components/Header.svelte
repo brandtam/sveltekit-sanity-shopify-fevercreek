@@ -86,30 +86,28 @@
 						>
 							<div class="space-y-4">
 								{#each products as product}
-									{#if product.store.status === 'active'}
-										<div
-											class="group aspect-h-1 aspect-w-1 relative overflow-hidden rounded-md bg-gray-100"
-										>
-											<img
-												src={product.store.previewImageUrl}
-												alt="Alt Text"
-												class="object-cover object-center group-hover:opacity-75"
-											/>
-											<div class="flex flex-col justify-end">
-												<div class="bg-white bg-opacity-60 p-4 text-base sm:text-sm">
-													<a
-														on:click={toggleSide}
-														href="/products/{product.store.slug.current}"
-														class="font-medium text-gray-900"
-													>
-														<span class="absolute inset-0" aria-hidden="true" />
-														{product.store.title}
-													</a>
-													<p aria-hidden="true" class="mt-0.5 text-gray-700 sm:mt-1">Shop now</p>
-												</div>
+									<div
+										class="group aspect-h-1 aspect-w-1 relative overflow-hidden rounded-md bg-gray-100"
+									>
+										<img
+											src={product.store.previewImageUrl}
+											alt="Alt Text"
+											class="object-cover object-center group-hover:opacity-75"
+										/>
+										<div class="flex flex-col justify-end">
+											<div class="bg-white bg-opacity-60 p-4 text-base sm:text-sm">
+												<a
+													on:click={toggleSide}
+													href="/products/{product.store.slug.current}"
+													class="font-medium text-gray-900"
+												>
+													<span class="absolute inset-0" aria-hidden="true" />
+													{product.store.title}
+												</a>
+												<p aria-hidden="true" class="mt-0.5 text-gray-700 sm:mt-1">Shop now</p>
 											</div>
 										</div>
-									{/if}
+									</div>
 								{/each}
 							</div>
 

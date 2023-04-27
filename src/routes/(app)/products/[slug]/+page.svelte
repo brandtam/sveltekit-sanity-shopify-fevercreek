@@ -1,18 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { addToCart } from '$lib/utils/cart';
-	import { browser } from '$app/environment';
 
 	export let data: PageData;
 	$: product = data.product;
-
-	$: displayProduct = {
-		id: data.product.gid,
-		title: data.product.title,
-		description: data.product.description,
-		image: data.product.previewImageUrl,
-		price: data.product.priceRange.maxVariantPrice
-	};
 
 	let selected: number = 1;
 	let openAccordion: number = 0;
@@ -23,10 +14,6 @@
 		} else {
 			openAccordion = index;
 		}
-	}
-	if (browser) {
-		console.log('product', data.product);
-		console.log('displayProduct', displayProduct);
 	}
 </script>
 
@@ -47,7 +34,7 @@
 							role="tab"
 							type="button"
 						>
-							<span class="sr-only">Preview Image</span>
+							<span class="sr-only">Main Image</span>
 							<span class="absolute inset-0 overflow-hidden rounded-md">
 								<img
 									src={product.previewImageUrl}
@@ -85,12 +72,23 @@
 			<div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
 				<h1 class="text-3xl font-bold tracking-tight text-gray-900">{product.title}</h1>
 
-				<div class="mt-3">
-					<h2 class="sr-only">Product information</h2>
-					<p class="text-3xl tracking-tight text-gray-900">
-						${product.priceRange.maxVariantPrice.toFixed(2)}
-					</p>
-				</div>
+				{#if product.variants.length > 1 && product.priceRange.minVariantPrice != product.priceRange.maxVariantPrice}
+					<div class="mt-3">
+						<h2 class="sr-only">Product information</h2>
+						<p class="text-3xl tracking-tight text-gray-900">
+							${product.priceRange.minVariantPrice.toFixed(2)} - ${product.priceRange.maxVariantPrice.toFixed(
+								2
+							)}
+						</p>
+					</div>
+				{:else}
+					<div class="mt-3">
+						<h2 class="sr-only">Product information</h2>
+						<p class="text-3xl tracking-tight text-gray-900">
+							${product.variants[0].store.price.toFixed(2)}
+						</p>
+					</div>
+				{/if}
 
 				<div class="mt-6">
 					<h3 class="sr-only">Description</h3>
@@ -103,36 +101,45 @@
 				</div>
 
 				<form class="mt-6">
-					<div class="mt-10 flex">
-						<button
-							on:click={() =>
-								addToCart({ product: displayProduct, variantId: product.gid, quantity: 1 })}
-							type="submit"
-							class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
-							>Add to bag</button
-						>
-
-						<button
-							type="button"
-							class="ml-4 flex items-center justify-center rounded-md px-3 py-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
-						>
-							<svg
-								class="h-6 w-6 flex-shrink-0"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								stroke="currentColor"
-								aria-hidden="true"
+					{#each product.variants as variant}
+						<div class="mt-10 flex">
+							<button
+								on:click={() =>
+									addToCart({
+										variantId: variant.store.gid,
+										quantity: 1,
+										image: product.previewImageUrl,
+										productTitle: product.title,
+										variantTitle: variant.store.title,
+										price: variant.store.price,
+										productHandle: product.slug.current
+									})}
+								type="submit"
+								class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
+								>Add to bag</button
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-								/>
-							</svg>
-							<span class="sr-only">Add to favorites</span>
-						</button>
-					</div>
+							<!-- <button
+								type="button"
+								class="ml-4 flex items-center justify-center rounded-md px-3 py-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+							>
+								<svg
+									class="h-6 w-6 flex-shrink-0"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									aria-hidden="true"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+									/>
+								</svg>
+								<span class="sr-only">Add to favorites</span>
+							</button> -->
+						</div>
+					{/each}
 				</form>
 
 				<section aria-labelledby="details-heading" class="mt-12">
