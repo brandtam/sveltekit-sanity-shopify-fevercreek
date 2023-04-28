@@ -1,10 +1,26 @@
 import { writable, get } from 'svelte/store';
+// import { createShopifyCart } from '$lib/utils/shopify';
+
+// const shopifyCart = async () => {
+// 	const data = await createShopifyCart();
+
+// 	if (data.body.data.cartCreate.cart) {
+// 		return data.body.data.cartCreate.cart;
+// 	}
+// 	return {
+// 		status: 500,
+// 		body: new Error('Failed to fetch cart')
+// 	};
+// };
+
+// const cart = shopifyCart();
 
 export const openSide = writable<boolean>(false);
 export const cartCount = writable<number>(0);
 export const cartSubtotal = writable<number>(0);
 export const cartItemsStore = writable<CartLineItem[]>([]);
 export const cartStore = writable<Cart | null>(null);
+export const shopCart = writable<ShopifyCart>();
 
 // add to cart
 export const addToCartItemsStore = (lineItem: CartLineItem) => {

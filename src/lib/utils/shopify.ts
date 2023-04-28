@@ -2,6 +2,8 @@ const storeUrl = import.meta.env.VITE_SHOPIFY_DOMAIN;
 const apiVersion = import.meta.env.VITE_SHOPIFY_API_VERSION;
 const accessToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
 const shopifyEndpoint = `https://${storeUrl}/api/${apiVersion}/graphql.json`;
+import { shopCart, cartCount } from '$lib/stores';
+import { goto } from '$app/navigation';
 
 export async function shopifyFetch({ query, variables }: ShopifyFetch) {
 	try {
@@ -320,26 +322,214 @@ export async function getProduct(handle: string) {
 }
 
 export async function createShopifyCart() {
-	return shopifyFetch({
-		query: `
-			mutation calculateCart($lineItems: [CartLineInput!]) {
-				cartCreate(input: { lines: $lineItems }) {
+	try {
+		const response = await shopifyFetch({
+			query: `
+				mutation calculateCart($lineItems: [CartLineInput!]) {
+					cartCreate(input: { lines: $lineItems }) {
+						cart {
+							checkoutUrl
+							id
+							cost {
+								totalAmount {
+									amount
+								}
+							}
+							totalQuantity
+							lines(first: 100) {
+								edges {
+									node {
+										id
+										quantity
+										merchandise {
+											... on ProductVariant {
+												id
+												title
+												priceV2 {
+													amount
+												}
+												product {
+													id
+													title
+													handle
+													totalInventory
+													images(first: 1) {
+														edges {
+															node {
+																originalSrc
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			`,
+			variables: {}
+		});
+		console.log(response);
+		const cart = response.body.data.cartCreate.cart;
+		shopCart.set(cart);
+		return response;
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function updateShopifyCart({ cartId, lineId, variantId, quantity }: ShopifyCartLine) {
+	try {
+		const response = await shopifyFetch({
+			query: `
+			mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+				cartLinesUpdate(cartId: $cartId, lines: $lines) {
 					cart {
 						checkoutUrl
 						id
+						cost {
+							totalAmount {
+								amount
+							}
+						}
+						totalQuantity
+						lines(first: 100) {
+							edges {
+								node {
+									id
+									quantity
+									merchandise {
+										... on ProductVariant {
+											id
+											title
+											priceV2 {
+												amount
+											}
+											product {
+												id
+												title
+												handle
+												totalInventory
+												images(first: 1) {
+													edges {
+														node {
+															originalSrc
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					userErrors {
+						field
+						message
 					}
 				}
 			}
 		`,
-		variables: {}
-	});
+			variables: {
+				cartId: cartId,
+				lines: [
+					{
+						id: lineId,
+						merchandiseId: variantId,
+						quantity: quantity
+					}
+				]
+			}
+		});
+		// console.log('updateShopifyCart', response);
+		const cart = response.body.data.cartLinesUpdate.cart;
+		shopCart.set(cart);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
-export async function updateCart({ cartId, lineId, variantId, quantity }: ShopifyCartLine) {
+export async function shopifyAddToCart(cartId: string, variantId: string, quantity = 1) {
+	console.log('shopifyAddToCart', cartId, variantId, quantity);
+	try {
+		const response = await shopifyFetch({
+			query: `
+				mutation addToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+					cartLinesAdd(cartId: $cartId, lines: $lines) {
+						cart {
+							checkoutUrl
+							id
+							cost {
+								totalAmount {
+									amount
+								}
+							}
+							totalQuantity
+							lines(first: 100) {
+								edges {
+									node {
+										id
+										quantity
+										merchandise {
+											... on ProductVariant {
+												id
+												title
+												priceV2 {
+													amount
+												}
+												product {
+													id
+													title
+													handle
+													totalInventory
+													images(first: 1) {
+														edges {
+															node {
+																originalSrc
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			`,
+			variables: {
+				cartId: cartId,
+				lines: [
+					{
+						merchandiseId: variantId,
+						quantity: quantity
+					}
+				]
+			}
+		});
+		cartCount.update((n) => n + quantity);
+		const cart = response.body.data.cartLinesAdd.cart;
+		shopCart.set(cart);
+		localStorage.setItem('cartId', cart.id);
+		localStorage.setItem('cart', JSON.stringify(cart));
+
+		setTimeout(() => goto('/cart'), 0);
+	} catch (error) {
+		console.log('shopifyAddToCart error', error);
+	}
+}
+
+export async function removeShopifyCartLine({ cartId, lineIds }: ShopifyCartLines) {
 	return shopifyFetch({
 		query: `
-			mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
-				cartLinesUpdate(cartId: $cartId, lines: $lines) {
+			mutation cartLinesRemove($cartId: ID!, $lines: [ID!]!) {
+				cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
 					userErrors {
 						field
 						message
@@ -349,51 +539,7 @@ export async function updateCart({ cartId, lineId, variantId, quantity }: Shopif
 		`,
 		variables: {
 			cartId: cartId,
-			lines: [
-				{
-					id: lineId,
-					merchandiseId: variantId,
-					quantity: quantity
-				}
-			]
-		}
-	});
-}
-
-export async function addToCart(cartId: string, variantId: string, quantity = 1) {
-	return shopifyFetch({
-		query: `
-			mutation addToCart($cartId: ID!, $lines: [CartLineInput!]!) {
-				cartLinesAdd(cartId: $cartId, lines: $lines) {
-					cart {
-						lines(first: 100) {
-							edges {
-								node {
-									id
-									quantity
-									merchandise {
-										... on ProductVariant {
-											product {
-												title
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		`,
-
-		variables: {
-			cartId: cartId,
-			lines: [
-				{
-					merchandiseId: variantId,
-					quantity: quantity
-				}
-			]
+			lineIds: [lineIds]
 		}
 	});
 }

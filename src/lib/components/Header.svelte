@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cartCount } from '$lib/stores';
+	import { shopCart } from '$lib/stores';
 	import type { PageData } from '../../routes/(app)/$types';
 	import { linear } from 'svelte/easing';
 	import { fly, fade } from 'svelte/transition';
@@ -379,12 +379,12 @@
 							</div>
 
 							<a
-								href="#"
+								href="/company"
 								class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
 								>Company</a
 							>
 							<a
-								href="#"
+								href="/stores"
 								class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
 								>Stores</a
 							>
@@ -428,7 +428,7 @@
 						</a> -->
 
 						<!-- Account -->
-						<a href="#" class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+						<a href="/account" class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
 							<span class="sr-only">Account</span>
 							<svg
 								class="h-6 w-6"
@@ -464,7 +464,7 @@
 									/>
 								</svg>
 								<span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"
-									>{$cartCount}</span
+									>{$shopCart?.totalQuantity || 0}</span
 								>
 								<span class="sr-only">items in cart, view bag</span>
 							</a>

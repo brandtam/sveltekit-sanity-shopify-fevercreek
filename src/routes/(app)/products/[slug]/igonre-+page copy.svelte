@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { addToCart } from '$lib/utils/cart';
-	import { shopifyAddToCart } from '$lib/utils/shopify';
 	import { shopCart } from '$lib/stores';
+	import { get } from 'svelte/store';
+	import { shopifyAddToCart } from '$lib/utils/shopify';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
+
 	$: ({ product, shopifyCart } = data);
 
 	let selected: number = 1;
@@ -18,11 +21,31 @@
 		}
 	}
 
-	function addToCartHandler(lineItem) {
-		// addToCart(lineItem);
-		shopifyAddToCart(shopifyCart.id, lineItem.variantId, lineItem.quantity);
+	function addToCartHandler(product, variant, quantity) {
+		if (shopifyCart) {
+			console.log('shopifyCart', shopifyCart);
+			shopifyAddToCart(shopifyCart.id, variant.store.gid, quantity);
+			// shopCart.set(shopifyCart);
+			// goto('/cart');
+		} else {
+			console.log('no shopifyCart');
+		}
 
-		// location.assign('/cart');
+		// addToCart({
+		// 	variantId: variant.store.gid,
+		// 	quantity: quantity,
+		// 	image: product.previewImageUrl,
+		// 	productTitle: product.title,
+		// 	variantTitle: variant.store.title,
+		// 	price: variant.store.price,
+		// 	productHandle: product.slug.current
+		// });
+	}
+
+	if (shopifyCart) {
+		console.log('shopifyCart', shopifyCart);
+	} else {
+		console.log('no shopifyCart');
 	}
 </script>
 
@@ -113,16 +136,7 @@
 					{#each product.variants as variant}
 						<div class="mt-10 flex">
 							<button
-								on:click={() =>
-									addToCartHandler({
-										variantId: variant.store.gid,
-										quantity: 1,
-										image: product.previewImageUrl,
-										productTitle: product.title,
-										variantTitle: variant.store.title,
-										price: variant.store.price,
-										productHandle: product.slug.current
-									})}
+								on:click={() => addToCartHandler(product, variant, 1)}
 								type="submit"
 								class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
 								>Add to bag</button
