@@ -516,8 +516,6 @@ export async function shopifyAddToCart(cartId: string, variantId: string, quanti
 		cartCount.update((n) => n + quantity);
 		const cart = response.body.data.cartLinesAdd.cart;
 		shopCart.set(cart);
-		localStorage.setItem('cartId', cart.id);
-		localStorage.setItem('cart', JSON.stringify(cart));
 
 		setTimeout(() => goto('/cart'), 0);
 	} catch (error) {
