@@ -6,11 +6,17 @@
 
 	let showSidePanel: boolean, showFlyout: boolean, width: number, selected: string;
 	selected = 'Guitars';
+
 	function toggleSide() {
 		showSidePanel = !showSidePanel;
 	}
 	function toggleFlyout() {
 		showFlyout = !showFlyout;
+	}
+
+	function linkClickHandler() {
+		showSidePanel = false;
+		showFlyout = false;
 	}
 
 	export let products: PageData['products'];
@@ -97,7 +103,7 @@
 										<div class="flex flex-col justify-end">
 											<div class="bg-white bg-opacity-60 p-4 text-base sm:text-sm">
 												<a
-													on:click={toggleSide}
+													on:click={linkClickHandler}
 													href="/products/{product.store.slug.current}"
 													class="font-medium text-gray-900"
 												>
@@ -143,14 +149,14 @@
 					<div class="space-y-6 border-t border-gray-200 px-4 py-6">
 						<div class="flow-root">
 							<a
-								on:click={toggleSide}
+							on:click={linkClickHandler}
 								href="/company"
 								class="-m-2 block p-2 font-medium text-gray-900">Company</a
 							>
 						</div>
 						<div class="flow-root">
 							<a
-								on:click={toggleSide}
+							on:click={linkClickHandler}
 								href="/about"
 								class="-m-2 block p-2 font-medium text-gray-900">About</a
 							>
@@ -237,7 +243,7 @@
 																	<div class="flex flex-col justify-end">
 																		<div class="bg-white bg-opacity-60 p-4 text-sm">
 																			<a
-																				on:click={toggleFlyout}
+																				on:click={linkClickHandler}
 																				href="/products/{product.store.slug.current}"
 																				class="font-medium text-gray-900"
 																			>
@@ -379,11 +385,13 @@
 							</div>
 
 							<a
+								on:click={linkClickHandler}
 								href="/company"
 								class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
 								>Company</a
 							>
 							<a
+								on:click={linkClickHandler}
 								href="/stores"
 								class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
 								>Stores</a
@@ -392,7 +400,7 @@
 					</div>
 
 					<!-- Logo -->
-					<a href="/" class="flex">
+					<a on:click={linkClickHandler} href="/" class="flex">
 						<span class="sr-only">Fever Creek</span>
 						<img class="h-8 w-auto" src="/fevercreek.svg" alt="" />
 					</a>
@@ -428,7 +436,7 @@
 						</a> -->
 
 						<!-- Account -->
-						<a href="/account" class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+						<a on:click={linkClickHandler} href="/account" class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
 							<span class="sr-only">Account</span>
 							<svg
 								class="h-6 w-6"
@@ -448,7 +456,7 @@
 
 						<!-- Cart -->
 						<div class="ml-4 flow-root lg:ml-6">
-							<a href="/cart" class="group -m-2 flex items-center p-2">
+							<a on:click={linkClickHandler} href="/cart" class="group -m-2 flex items-center p-2">
 								<svg
 									class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
 									fill="none"
@@ -464,7 +472,7 @@
 									/>
 								</svg>
 								<span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"
-									>{$shopCart?.totalQuantity || 0}</span
+									>{$shopCart.totalQuantity || 0}</span
 								>
 								<span class="sr-only">items in cart, view bag</span>
 							</a>

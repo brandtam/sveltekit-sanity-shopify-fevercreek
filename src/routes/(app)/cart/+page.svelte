@@ -1,26 +1,28 @@
 <script lang="ts">
 	import { shopCart } from '$lib/stores';
 	import { goto } from '$app/navigation';
-	import { updateShopifyCart } from '$lib/utils/shopify';
+	import { shopifyUpdateCart } from '$lib/utils/shopify';
 
 	const showQuantity = false;
 	$: shippingEstimate = Number($shopCart?.totalQuantity || 0) * 150;
 
-	console.log('$shopCart', $shopCart);
+	// console.log('$shopCart', $shopCart);
 
 	function checkoutHandler() {
 		goto($shopCart.checkoutUrl);
 	}
 	function removeFromCartHandler(cartId: number, lineId: number, variantId: number) {
 		const quantity = 0;
-		updateShopifyCart({ cartId, lineId, variantId, quantity });
+		shopifyUpdateCart({ cartId, lineId, variantId, quantity });
 	}
 </script>
 
 <div class="bg-white">
 	<div class="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
 		<h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Shopping Cart</h1>
-		{#if !$shopCart}
+		{#if !$shopCart.id}
+			<p>Loading Cart...</p>
+		{:else if $shopCart.lines.edges.length === 0}
 			<p>The cart is empty</p>
 		{:else}
 			<form class="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
@@ -135,7 +137,7 @@
 						<div class="flex items-center justify-between">
 							<dt class="text-sm text-gray-600">Subtotal</dt>
 							<dd class="text-sm font-medium text-gray-900">
-								${$shopCart.cost.totalAmount.amount}
+								${Number($shopCart.cost.totalAmount.amount).toFixed(2)}
 							</dd>
 						</div>
 						<div class="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -173,7 +175,7 @@
 						<div class="flex items-center justify-between border-t border-gray-200 pt-4">
 							<dt class="text-base font-medium text-gray-900">Order total</dt>
 							<dd class="text-base font-medium text-gray-900">
-								${$shopCart.cost.totalAmount.amount}
+								${(Number($shopCart.cost.totalAmount.amount) + shippingEstimate).toFixed(2)}
 							</dd>
 						</div>
 					</dl>

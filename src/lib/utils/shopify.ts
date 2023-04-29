@@ -2,7 +2,7 @@ const storeUrl = import.meta.env.VITE_SHOPIFY_DOMAIN;
 const apiVersion = import.meta.env.VITE_SHOPIFY_API_VERSION;
 const accessToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
 const shopifyEndpoint = `https://${storeUrl}/api/${apiVersion}/graphql.json`;
-import { shopCart, cartCount } from '$lib/stores';
+import { shopCart } from '$lib/stores';
 import { goto } from '$app/navigation';
 
 export async function shopifyFetch({ query, variables }: ShopifyFetch) {
@@ -321,7 +321,7 @@ export async function getProduct(handle: string) {
 	});
 }
 
-export async function createShopifyCart() {
+export async function shopifyCreateCart() {
 	try {
 		const response = await shopifyFetch({
 			query: `
@@ -372,16 +372,15 @@ export async function createShopifyCart() {
 			`,
 			variables: {}
 		});
-		console.log(response);
 		const cart = response.body.data.cartCreate.cart;
 		shopCart.set(cart);
-		return response;
+		return cart;
 	} catch (error) {
 		console.log(error);
 	}
 }
 
-export async function updateShopifyCart({ cartId, lineId, variantId, quantity }: ShopifyCartLine) {
+export async function shopifyUpdateCart({ cartId, lineId, variantId, quantity }: ShopifyCartLine) {
 	try {
 		const response = await shopifyFetch({
 			query: `
@@ -445,7 +444,6 @@ export async function updateShopifyCart({ cartId, lineId, variantId, quantity }:
 				]
 			}
 		});
-		// console.log('updateShopifyCart', response);
 		const cart = response.body.data.cartLinesUpdate.cart;
 		shopCart.set(cart);
 	} catch (error) {
@@ -454,7 +452,6 @@ export async function updateShopifyCart({ cartId, lineId, variantId, quantity }:
 }
 
 export async function shopifyAddToCart(cartId: string, variantId: string, quantity = 1) {
-	console.log('shopifyAddToCart', cartId, variantId, quantity);
 	try {
 		const response = await shopifyFetch({
 			query: `
@@ -513,7 +510,6 @@ export async function shopifyAddToCart(cartId: string, variantId: string, quanti
 				]
 			}
 		});
-		cartCount.update((n) => n + quantity);
 		const cart = response.body.data.cartLinesAdd.cart;
 		shopCart.set(cart);
 
@@ -523,7 +519,7 @@ export async function shopifyAddToCart(cartId: string, variantId: string, quanti
 	}
 }
 
-export async function removeShopifyCartLine({ cartId, lineIds }: ShopifyCartLines) {
+export async function shopifyRemoveCartLines({ cartId, lineIds }: ShopifyCartLines) {
 	return shopifyFetch({
 		query: `
 			mutation cartLinesRemove($cartId: ID!, $lines: [ID!]!) {

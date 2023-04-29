@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { addToCart } from '$lib/utils/cart';
 	import { shopifyAddToCart } from '$lib/utils/shopify';
 	import { shopCart } from '$lib/stores';
 
 	export let data: PageData;
-	$: ({ product, shopifyCart } = data);
+	$: ({ product } = data);
 
 	let selected: number = 1;
 	let openAccordion: number = 0;
@@ -19,10 +18,7 @@
 	}
 
 	function addToCartHandler(lineItem) {
-		// addToCart(lineItem);
-		shopifyAddToCart(shopifyCart.id, lineItem.variantId, lineItem.quantity);
-
-		// location.assign('/cart');
+		shopifyAddToCart($shopCart.id, lineItem.variantId, lineItem.quantity);
 	}
 </script>
 
