@@ -380,7 +380,12 @@ export async function shopifyCreateCart() {
 	}
 }
 
-export async function shopifyUpdateCart({ cartId, lineId, variantId, quantity }: ShopifyCartLine) {
+export async function shopifyUpdateCart({
+	cartId,
+	lineId,
+	variantId,
+	quantity
+}: ShopifyCartLineInput) {
 	try {
 		const response = await shopifyFetch({
 			query: `
@@ -451,7 +456,7 @@ export async function shopifyUpdateCart({ cartId, lineId, variantId, quantity }:
 	}
 }
 
-export async function shopifyAddToCart(cartId: string, variantId: string, quantity = 1) {
+export async function shopifyAddToCart({ cartId, variantId, quantity = 1 }: ShopifyCartAdd) {
 	try {
 		const response = await shopifyFetch({
 			query: `

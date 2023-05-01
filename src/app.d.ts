@@ -1,69 +1,84 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
+	type Cost = {
+		totalAmount: {
+			amount: number;
+		};
+	};
+
+	type Image = {
+		originalSrc: string;
+	};
+
 	type ShopifyProduct = {
 		id: string;
 		title: string;
-		description: string;
-		images: {
-			edges: {
-				node: {
-					id: string;
-					originalSrc: string;
-					altText: string;
-				};
-			}[];
-		};
-		priceRange: {
-			minVariantPrice: {
-				amount: string;
-				currencyCode: string;
-			};
-		};
+		handle: string;
+		totalInventory: number;
+		images: Array<Image>;
 	};
+
 	type ShopifyProductVariant = {
 		id: string;
 		title: string;
-		price: string;
+		priceV2: number;
+		product: Product;
 	};
+
+	type LineNode = {
+		id: string;
+		quantity: number;
+		merchandise: ProductVariant;
+	};
+
+	type LineEdge = {
+		node: LineNode;
+	};
+
+	type LineConnection = {
+		edges: Array<LineEdge>;
+	};
+
+	type ShopifyCart = {
+		checkoutUrl: string;
+		id: string;
+		cost: Cost;
+		totalQuantity: number;
+		lines: LineConnection;
+	};
+
+	type CartCreatePayload = {
+		cart: Cart;
+	};
+
+	type ShopifyCartLineInput = {
+		cartId: string;
+		lineId: string;
+		variantId: number;
+		quantity: number;
+	};
+
+	type ShopifyCartLines = {
+		cartId: string;
+		lineIds: Array<string>;
+	};
+
+	type ShopifyCartAdd = {
+		cartId: string;
+		variantId: number;
+		quantity: number;
+	};
+
+	type CalculateCartMutation = {
+		calculateCart: CartCreatePayload;
+	};
+
 	type ShopifyFetch = {
 		query: string;
 		variables?: Record<string, unknown>;
 	};
-	type ShopifyCartLine = {
-		cartId?: number;
-		lineId?: number;
-		variantId: number;
-		quantity: number;
-	};
-	type ShopifyCart = {
-		checkoutUrl: string;
-		id: string;
-		lines: ShopifyCartLine[];
-	};
-	type CartItem = {
-		product: Product;
-		variantId: string;
-		quantity: number;
-	};
-	type CartLineItem = {
-		variantId: string;
-		quantity: number;
-		image: string;
-		productTitle: string;
-		variantTitle: string;
-		price: string;
-		productHandle: string;
-	};
-	type RemoveLineItem = {
-		variantId: string;
-		quantity: number;
-	};
-	type Cart = {
-		id: string;
-		subtotal: number;
-		lines: [CartItem];
-	};
+
 	namespace App {
 		// interface Error {}
 		// interface Locals {}

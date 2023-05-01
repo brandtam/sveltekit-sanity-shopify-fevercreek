@@ -17,8 +17,12 @@
 		}
 	}
 
-	function addToCartHandler(lineItem) {
-		shopifyAddToCart($shopCart.id, lineItem.variantId, lineItem.quantity);
+	function addToCartHandler(lineItem: ShopifyCartAdd) {
+		shopifyAddToCart({
+			cartId: lineItem.cartId,
+			variantId: lineItem.variantId,
+			quantity: lineItem.quantity
+		});
 	}
 </script>
 
@@ -111,13 +115,9 @@
 							<button
 								on:click={() =>
 									addToCartHandler({
+										cartId: $shopCart.id,
 										variantId: variant.store.gid,
-										quantity: 1,
-										image: product.previewImageUrl,
-										productTitle: product.title,
-										variantTitle: variant.store.title,
-										price: variant.store.price,
-										productHandle: product.slug.current
+										quantity: 1
 									})}
 								type="submit"
 								class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
