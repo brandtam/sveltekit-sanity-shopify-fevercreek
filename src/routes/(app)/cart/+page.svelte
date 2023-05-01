@@ -11,8 +11,7 @@
 	function checkoutHandler() {
 		goto($shopCart.checkoutUrl);
 	}
-	function removeFromCartHandler(cartId: number, lineId: number, variantId: number) {
-		const quantity = 0;
+	function removeFromCartHandler({ cartId, lineId, variantId, quantity }: ShopifyCartLineInput) {
 		shopifyUpdateCart({ cartId, lineId, variantId, quantity });
 	}
 </script>
@@ -81,11 +80,12 @@
 											<div class="absolute right-0 top-0">
 												<button
 													on:click={() =>
-														removeFromCartHandler(
-															$shopCart.id,
-															item.node.id,
-															item.node.merchandise.id
-														)}
+														removeFromCartHandler({
+															cartId: $shopCart.id,
+															lineId: item.node.id,
+															variantId: item.node.merchandise.id,
+															quantity: 0
+														})}
 													type="button"
 													class="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
 												>
