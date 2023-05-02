@@ -1,9 +1,12 @@
-export default {
+import pluralize from 'pluralize-esm';
+import { defineField } from 'sanity';
+
+export default defineField({
 	name: 'gallery',
 	type: 'object',
 	title: 'Gallery',
 	fields: [
-		{
+		defineField({
 			name: 'images',
 			type: 'array',
 			title: 'Images',
@@ -16,38 +19,18 @@ export default {
 						hotspot: true
 					},
 					fields: [
-						{
+						defineField({
 							name: 'alt',
 							type: 'string',
-							title: 'Alternative text'
-						}
+							title: 'Alt text'
+						})
 					]
 				}
 			],
 			options: {
 				layout: 'grid'
 			}
-		},
-		{
-			name: 'display',
-			type: 'string',
-			title: 'Display as',
-			description: 'How should we display these images?',
-			options: {
-				list: [
-					{ title: 'Stacked on top of eachother', value: 'stacked' },
-					{ title: 'In-line', value: 'inline' },
-					{ title: 'Carousel', value: 'carousel' }
-				],
-				layout: 'radio' // <-- defaults to 'dropdown'
-			}
-		},
-		{
-			name: 'zoom',
-			type: 'boolean',
-			title: 'Zoom enabled',
-			description: 'Should we enable zooming of images?'
-		}
+		})
 	],
 	preview: {
 		select: {
@@ -56,12 +39,10 @@ export default {
 		},
 		prepare(selection) {
 			const { images, image } = selection;
-
 			return {
-				title: `Gallery block of ${Object.keys(images).length} images`,
-				subtitle: `Alt text: ${image.alt}`,
-				media: image
+				subtitle: images.length > 0 ? pluralize('image', images.length, true) : 'No images',
+				image
 			};
 		}
 	}
-};
+});
