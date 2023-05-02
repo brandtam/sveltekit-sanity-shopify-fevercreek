@@ -83,6 +83,11 @@ export default defineType({
 			title: 'SEO',
 			type: 'seo.shopify',
 			group: 'seo'
+		}),
+		defineField({
+			name: 'imageGallery',
+			title: 'Image gallery',
+			type: 'gallery'
 		})
 	],
 	orderings: [
