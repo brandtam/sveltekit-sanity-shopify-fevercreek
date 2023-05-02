@@ -24,6 +24,8 @@
 			quantity: lineItem.quantity
 		});
 	}
+
+	console.log('product', data.product);
 </script>
 
 <main class="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:px-8">
@@ -46,7 +48,7 @@
 							<span class="sr-only">Main Image</span>
 							<span class="absolute inset-0 overflow-hidden rounded-md">
 								<img
-									src={product.previewImageUrl}
+									src={product.store.previewImageUrl}
 									alt=""
 									class="h-full w-full object-cover object-center"
 								/>
@@ -67,7 +69,7 @@
 					<!-- Tab panel, show/hide based on tab state. -->
 					<div id="tabs-2-panel-1" aria-labelledby="tabs-2-tab-1" role="tabpanel" tabindex="0">
 						<img
-							src={product.previewImageUrl}
+							src={product.store.previewImageUrl}
 							alt="Alt Text"
 							class="h-full w-full object-cover object-center sm:rounded-lg"
 						/>
@@ -79,13 +81,13 @@
 
 			<!-- Product info -->
 			<div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-				<h1 class="text-3xl font-bold tracking-tight text-gray-900">{product.title}</h1>
+				<h1 class="text-3xl font-bold tracking-tight text-gray-900">{product.store.title}</h1>
 
-				{#if product.variants.length > 1 && product.priceRange.minVariantPrice != product.priceRange.maxVariantPrice}
+				{#if product.store.variants.length > 1 && product.store.priceRange.minVariantPrice != product.store.priceRange.maxVariantPrice}
 					<div class="mt-3">
 						<h2 class="sr-only">Product information</h2>
 						<p class="text-3xl tracking-tight text-gray-900">
-							${product.priceRange.minVariantPrice.toFixed(2)} - ${product.priceRange.maxVariantPrice.toFixed(
+							${product.store.priceRange.minVariantPrice.toFixed(2)} - ${product.store.priceRange.maxVariantPrice.toFixed(
 								2
 							)}
 						</p>
@@ -94,7 +96,7 @@
 					<div class="mt-3">
 						<h2 class="sr-only">Product information</h2>
 						<p class="text-3xl tracking-tight text-gray-900">
-							${product.variants[0].store.price.toFixed(2)}
+							${product.store.variants[0].store.price.toFixed(2)}
 						</p>
 					</div>
 				{/if}
@@ -104,13 +106,13 @@
 
 					<div class="space-y-6 text-base text-gray-700">
 						<p>
-							{@html product.descriptionHtml}
+							{@html product.store.descriptionHtml}
 						</p>
 					</div>
 				</div>
 
 				<form class="mt-6">
-					{#each product.variants as variant}
+					{#each product.store.variants as variant}
 						<div class="mt-10 flex">
 							<button
 								on:click={() =>
