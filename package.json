@@ -19,12 +19,13 @@
 		"@playwright/test": "^1.33.0",
 		"@sanity/eslint-config-studio": "^2.0.1",
 		"@sveltejs/adapter-auto": "^2.0.1",
-		"@sveltejs/kit": "^1.15.9",
+		"@sveltejs/adapter-vercel": "^2.4.3",
+		"@sveltejs/kit": "^1.15.10",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@types/react": "^18.2.0",
 		"@types/styled-components": "^5.1.26",
-		"@typescript-eslint/eslint-plugin": "^5.59.1",
-		"@typescript-eslint/parser": "^5.59.1",
+		"@typescript-eslint/eslint-plugin": "^5.59.2",
+		"@typescript-eslint/parser": "^5.59.2",
 		"autoprefixer": "^10.4.14",
 		"eslint": "^8.39.0",
 		"eslint-config-prettier": "^8.8.0",
@@ -38,7 +39,7 @@
 		"tailwindcss": "^3.3.2",
 		"tslib": "^2.5.0",
 		"typescript": "^5.0.4",
-		"vite": "^4.3.3"
+		"vite": "^4.3.4"
 	},
 	"type": "module",
 	"dependencies": {
