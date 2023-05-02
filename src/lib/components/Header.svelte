@@ -149,14 +149,14 @@
 					<div class="space-y-6 border-t border-gray-200 px-4 py-6">
 						<div class="flow-root">
 							<a
-							on:click={linkClickHandler}
+								on:click={linkClickHandler}
 								href="/company"
 								class="-m-2 block p-2 font-medium text-gray-900">Company</a
 							>
 						</div>
 						<div class="flow-root">
 							<a
-							on:click={linkClickHandler}
+								on:click={linkClickHandler}
 								href="/about"
 								class="-m-2 block p-2 font-medium text-gray-900">About</a
 							>
@@ -402,7 +402,13 @@
 					<!-- Logo -->
 					<a on:click={linkClickHandler} href="/" class="flex">
 						<span class="sr-only">Fever Creek</span>
-						<img class="h-8 w-auto" src="/fevercreek.svg" alt="" />
+						<img
+							class="h-8 w-auto"
+							src="/fevercreek.svg"
+							width="32"
+							height="32"
+							alt="Company Logo"
+						/>
 					</a>
 
 					<div class="flex flex-1 items-center justify-end">
@@ -436,7 +442,11 @@
 						</a> -->
 
 						<!-- Account -->
-						<a on:click={linkClickHandler} href="/account" class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
+						<a
+							on:click={linkClickHandler}
+							href="/account"
+							class="p-2 text-gray-400 hover:text-gray-500 lg:ml-4"
+						>
 							<span class="sr-only">Account</span>
 							<svg
 								class="h-6 w-6"

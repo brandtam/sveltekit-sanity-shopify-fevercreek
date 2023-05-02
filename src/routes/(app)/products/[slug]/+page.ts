@@ -6,6 +6,12 @@ export const load = (async ({ fetch, params }) => {
 	const product = await client.fetch(
 		`*[_type == "product" && store.slug.current == '${params.slug}']{
 			...,
+			imageGallery {
+				images[]{
+					alt,
+					asset->{...}
+				},
+			},
 			store {
 				...,
 				title,

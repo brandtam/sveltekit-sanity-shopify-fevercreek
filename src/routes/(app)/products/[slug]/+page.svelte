@@ -2,11 +2,12 @@
 	import type { PageData } from './$types';
 	import { shopifyAddToCart } from '$lib/utils/shopify';
 	import { shopCart } from '$lib/stores';
+	import { urlFor } from '$lib/utils/sanity';
 
 	export let data: PageData;
 	$: ({ product } = data);
 
-	let selected: number = 1;
+	let selected: number = 0;
 	let openAccordion: number = 0;
 
 	function toggleAccordion(index: number) {
@@ -26,7 +27,13 @@
 	}
 
 	console.log('product', data.product);
+	const { imageGallery } = data.product;
+	console.log('imageGallery', imageGallery);
 </script>
+
+<svelte:head>
+	<title>{product.store.title}</title>
+</svelte:head>
 
 <main class="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:px-8">
 	<div class="mx-auto max-w-2xl lg:max-w-none">
@@ -37,45 +44,52 @@
 				<!-- Image selector -->
 				<div class="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
 					<div class="grid grid-cols-4 gap-6" aria-orientation="horizontal" role="tablist">
-						<button
-							on:click={() => (selected = 1)}
-							id="tabs-2-tab-1"
-							class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
-							aria-controls="tabs-2-panel-1"
-							role="tab"
-							type="button"
-						>
-							<span class="sr-only">Main Image</span>
-							<span class="absolute inset-0 overflow-hidden rounded-md">
-								<img
-									src={product.store.previewImageUrl}
-									alt=""
-									class="h-full w-full object-cover object-center"
+						{#each product.imageGallery.images as image, index}
+							<button
+								on:click={() => (selected = index)}
+								id="tabs-1-tab-{index}"
+								class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
+								aria-controls="tabs-1-panel-{index}"
+								role="tab"
+								type="button"
+							>
+								<span class="sr-only">Main Image</span>
+								<span class="absolute inset-0 overflow-hidden rounded-md">
+									<img
+										src={urlFor(image.asset).width(130).url()}
+										alt={image.alt}
+										class="h-full w-full object-cover object-center"
+									/>
+								</span>
+								<span
+									class="{selected === index
+										? 'ring-indigo-500'
+										: 'ring-transparent'} pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2"
+									aria-hidden="true"
 								/>
-							</span>
-							<span
-								class="{selected === 1
-									? 'ring-indigo-500'
-									: 'ring-transparent'} pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2"
-								aria-hidden="true"
-							/>
-						</button>
-
-						<!-- More images... -->
+							</button>
+						{/each}
 					</div>
 				</div>
 
 				<div class="aspect-h-1 aspect-w-1 w-full">
 					<!-- Tab panel, show/hide based on tab state. -->
-					<div id="tabs-2-panel-1" aria-labelledby="tabs-2-tab-1" role="tabpanel" tabindex="0">
-						<img
-							src={product.store.previewImageUrl}
-							alt="Alt Text"
-							class="h-full w-full object-cover object-center sm:rounded-lg"
-						/>
-					</div>
 
-					<!-- More images... -->
+					{#each product.imageGallery.images as image, index}
+						<div
+							id="tabs-1-panel-{index}"
+							aria-labelledby="tabs-1-tab-{index}"
+							role="tabpanel"
+							tabindex={index}
+							class={selected === index ? 'block' : 'hidden'}
+						>
+							<img
+								src={urlFor(image.asset).width(600).auto('format').url()}
+								alt="Alt Text"
+								class="h-full w-full object-cover object-center sm:rounded-lg"
+							/>
+						</div>
+					{/each}
 				</div>
 			</div>
 
