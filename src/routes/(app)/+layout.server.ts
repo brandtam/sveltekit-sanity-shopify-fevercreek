@@ -3,23 +3,21 @@ import { client } from '$lib/utils/sanity';
 
 export const load = (async () => {
 	const sanityProducts = async () => {
-		const data = await client.fetch(
-			`*[_type == "product" && store.status == 'active']{
-				...,
-				store {
+		try {
+			const data = await client.fetch(
+				`*[_type == "product" && store.status == 'active']{
 					...,
-					title,
-					variants[]->
-				}
-			}`
-		);
-		if (data) {
+					store {
+						...,
+						title,
+						variants[]->
+					}
+				}`
+			);
 			return data;
+		} catch (error) {
+			console.error(error);
 		}
-		return {
-			status: 500,
-			body: new Error('Failed to fetch products')
-		};
 	};
 
 	return {

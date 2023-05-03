@@ -3,6 +3,18 @@
 	import { shopifyAddToCart } from '$lib/utils/shopify';
 	import { shopCart } from '$lib/stores';
 	import { urlFor } from '$lib/utils/sanity';
+	import { onMount } from 'svelte';
+	import PhotoSwipeLightbox from 'photoswipe/lightbox';
+	import 'photoswipe/style.css';
+
+	onMount(() => {
+		let lightbox = new PhotoSwipeLightbox({
+			gallery: '#' + galleryID,
+			children: 'a',
+			pswpModule: () => import('photoswipe')
+		});
+		lightbox.init();
+	});
 
 	export let data: PageData;
 	$: ({ product } = data);
@@ -26,9 +38,7 @@
 		});
 	}
 
-	console.log('product', data.product);
-	const { imageGallery } = data.product;
-	console.log('imageGallery', imageGallery);
+	let galleryID = 'product-images';
 </script>
 
 <svelte:head>
@@ -37,63 +47,80 @@
 
 <main class="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:px-8">
 	<div class="mx-auto max-w-2xl lg:max-w-none">
-		<!-- Product -->
 		<div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
-			<!-- Image gallery -->
 			<div class="flex flex-col-reverse">
-				<!-- Image selector -->
+				<!-- Images list -->
 				<div class="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
 					<div class="grid grid-cols-4 gap-6" aria-orientation="horizontal" role="tablist">
-						{#each product.imageGallery.images as image, index}
-							<button
-								on:click={() => (selected = index)}
-								id="tabs-1-tab-{index}"
-								class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
-								aria-controls="tabs-1-panel-{index}"
-								role="tab"
-								type="button"
-							>
-								<span class="sr-only">Main Image</span>
-								<span class="absolute inset-0 overflow-hidden rounded-md">
-									<img
-										src={urlFor(image.asset).width(130).url()}
-										alt={image.alt}
-										class="h-full w-full object-cover object-center"
+						{#if product.imageGallery && product.imageGallery?.images.length >= 1}
+							{#each product.imageGallery.images as image, index}
+								<button
+									on:click={() => (selected = index)}
+									id="tabs-1-tab-{index}"
+									class="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
+									aria-controls="tabs-1-panel-{index}"
+									role="tab"
+									type="button"
+								>
+									<span class="sr-only">Main Image</span>
+									<span class="absolute inset-0 overflow-hidden rounded-md">
+										<img
+											src={urlFor(image.asset).width(130).url()}
+											alt={image.alt}
+											class="h-full w-full object-cover object-center"
+										/>
+									</span>
+									<span
+										class="{selected === index
+											? 'ring-indigo-500'
+											: 'ring-transparent'} pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2"
+										aria-hidden="true"
 									/>
-								</span>
-								<span
-									class="{selected === index
-										? 'ring-indigo-500'
-										: 'ring-transparent'} pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2"
-									aria-hidden="true"
-								/>
-							</button>
-						{/each}
+								</button>
+							{/each}
+						{:else}
+							<div class="flex items-center justify-center bg-slate-100">
+								<p>No Images</p>
+							</div>
+						{/if}
 					</div>
 				</div>
-
-				<div class="aspect-h-1 aspect-w-1 w-full">
-					<!-- Tab panel, show/hide based on tab state. -->
-
-					{#each product.imageGallery.images as image, index}
-						<div
-							id="tabs-1-panel-{index}"
-							aria-labelledby="tabs-1-tab-{index}"
-							role="tabpanel"
-							tabindex={index}
-							class={selected === index ? 'block' : 'hidden'}
-						>
-							<img
-								src={urlFor(image.asset).width(600).auto('format').url()}
-								alt="Alt Text"
-								class="h-full w-full object-cover object-center sm:rounded-lg"
-							/>
-						</div>
-					{/each}
+				<!-- Main image Pane -->
+				<div class="pswp-gallery" id={galleryID}>
+					<div class="aspect-h-1 aspect-w-1 w-full">
+						{#if product.imageGallery && product.imageGallery.images.length >= 1}
+							{#each product.imageGallery.images as image, index}
+								<div
+									id="tabs-1-panel-{index}"
+									aria-labelledby="tabs-1-tab-{index}"
+									role="tabpanel"
+									tabindex={index}
+									class={selected === index ? 'block' : 'hidden'}
+								>
+									<a
+										href={image.asset.url}
+										data-pswp-width={image.asset.metadata.dimensions.width}
+										data-pswp-height={image.asset.metadata.dimensions.height}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<img
+											src={urlFor(image.asset.url).width(600).auto('format').url()}
+											alt={image.alt}
+											class="h-full w-full object-cover object-center sm:rounded-lg"
+										/>
+									</a>
+								</div>
+							{/each}
+						{:else}
+							<div class="flex items-center justify-center bg-slate-100">
+								<p>No Image</p>
+							</div>
+						{/if}
+					</div>
 				</div>
 			</div>
 
-			<!-- Product info -->
 			<div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
 				<h1 class="text-3xl font-bold tracking-tight text-gray-900">{product.store.title}</h1>
 
@@ -139,26 +166,6 @@
 								class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
 								>Add to bag</button
 							>
-							<!-- <button
-								type="button"
-								class="ml-4 flex items-center justify-center rounded-md px-3 py-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
-							>
-								<svg
-									class="h-6 w-6 flex-shrink-0"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									aria-hidden="true"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-									/>
-								</svg>
-								<span class="sr-only">Add to favorites</span>
-							</button> -->
 						</div>
 					{/each}
 				</form>
@@ -169,7 +176,6 @@
 					<div class="divide-y divide-gray-200 border-t">
 						<div>
 							<h3>
-								<!-- Expand/collapse question button -->
 								<button
 									on:click={() => toggleAccordion(1)}
 									type="button"
@@ -227,56 +233,9 @@
 								</ul>
 							</div>
 						</div>
-
-						<!-- More sections... -->
 					</div>
 				</section>
 			</div>
 		</div>
-
-		<!-- <section
-			aria-labelledby="related-heading"
-			class="mt-10 border-t border-gray-200 px-4 py-16 sm:px-0"
-		>
-			<h2 id="related-heading" class="text-xl font-bold text-gray-900">Customers also bought</h2>
-
-			<div
-				class="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
-			>
-				<div>
-					<div class="relative">
-						<div class="relative h-72 w-full overflow-hidden rounded-lg">
-							<img
-								src="https://tailwindui.com/img/ecommerce-images/product-page-03-related-product-01.jpg"
-								alt="Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls."
-								class="h-full w-full object-cover object-center"
-							/>
-						</div>
-						<div class="relative mt-4">
-							<h3 class="text-sm font-medium text-gray-900">Zip Tote Basket</h3>
-							<p class="mt-1 text-sm text-gray-500">White and black</p>
-						</div>
-						<div
-							class="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4"
-						>
-							<div
-								aria-hidden="true"
-								class="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50"
-							/>
-							<p class="relative text-lg font-semibold text-white">$140</p>
-						</div>
-					</div>
-					<div class="mt-6">
-						<a
-							href="#"
-							class="relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200"
-							>Add to bag<span class="sr-only">, Zip Tote Basket</span></a
-						>
-					</div>
-				</div> -->
-
-		<!-- More products... -->
-		<!-- </div>
-		</section> -->
 	</div>
 </main>
