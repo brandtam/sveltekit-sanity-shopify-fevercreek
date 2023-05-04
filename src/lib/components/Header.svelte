@@ -98,7 +98,7 @@
 										<img
 											src={product.store.previewImageUrl}
 											alt="Alt Text"
-											class="object-cover object-center group-hover:opacity-75"
+											class="object-cover object-center md:group-hover:opacity-75"
 										/>
 										<div class="flex flex-col justify-end">
 											<div class="bg-white bg-opacity-60 p-4 text-base sm:text-sm">
@@ -206,7 +206,7 @@
 										type="button"
 										class="{showFlyout
 											? 'text-indigo-600'
-											: 'text-gray-700 hover:text-gray-800'} relative z-10 flex items-center justify-center text-sm font-medium transition-colors duration-200 ease-out"
+											: 'text-gray-700 md:hover:text-gray-800'} relative z-10 flex items-center justify-center text-sm font-medium transition-colors duration-200 ease-out"
 										aria-expanded="false"
 									>
 										Guitars
@@ -238,7 +238,7 @@
 																	<img
 																		src={product.store.previewImageUrl}
 																		alt="Alt Text"
-																		class="object-cover object-center group-hover:opacity-75"
+																		class="object-cover object-center md:group-hover:opacity-75"
 																	/>
 																	<div class="flex flex-col justify-end">
 																		<div class="bg-white bg-opacity-60 p-4 text-sm">
@@ -403,10 +403,10 @@
 					<a on:click={linkClickHandler} href="/" class="flex">
 						<span class="sr-only">Fever Creek</span>
 						<img
-							class="h-8 w-auto"
+							class="h-14 w-auto"
 							src="/fevercreek.svg"
-							width="32"
-							height="32"
+							width="64"
+							height="64"
 							alt="Company Logo"
 						/>
 					</a>

@@ -37,6 +37,9 @@
 			quantity: lineItem.quantity
 		});
 	}
+	function linkClickHandler() {
+		console.log('link clicked');
+	}
 
 	let galleryID = 'product-images';
 </script>
@@ -87,30 +90,41 @@
 				</div>
 				<!-- Main image Pane -->
 				<div class="pswp-gallery" id={galleryID}>
-					<div class="aspect-h-1 aspect-w-1 w-full">
+					<div class="w-full">
 						{#if product.imageGallery && product.imageGallery.images.length >= 1}
 							{#each product.imageGallery.images as image, index}
-								<div
-									id="tabs-1-panel-{index}"
-									aria-labelledby="tabs-1-tab-{index}"
-									role="tabpanel"
-									tabindex={index}
-									class={selected === index ? 'block' : 'hidden'}
+								<a
+									href={image.asset.url}
+									data-pswp-width={image.asset.metadata.dimensions.width}
+									data-pswp-height={image.asset.metadata.dimensions.height}
+									target="_blank"
+									rel="noreferrer"
 								>
-									<a
-										href={image.asset.url}
-										data-pswp-width={image.asset.metadata.dimensions.width}
-										data-pswp-height={image.asset.metadata.dimensions.height}
-										target="_blank"
-										rel="noreferrer"
+									<div
+										id="tabs-1-panel-{index}"
+										aria-labelledby="tabs-1-tab-{index}"
+										role="tabpanel"
+										tabindex={index}
+										class="{selected === index
+											? 'block'
+											: 'hidden'} aspect-h-1 aspect-w-1 relative overflow-hidden rounded-md bg-gray-100"
 									>
 										<img
 											src={urlFor(image.asset.url).width(600).auto('format').url()}
 											alt={image.alt}
 											class="h-full w-full object-cover object-center sm:rounded-lg"
 										/>
-									</a>
-								</div>
+										<div class="flex flex-col justify-end md:hidden">
+											<div class="z-10 bg-white bg-opacity-60 p-4 text-base sm:text-sm">
+												<span class=" inset-0" aria-hidden="true" />
+												{index + 1} of {product.imageGallery.images.length}
+												<p aria-hidden="true" class="mt-0.5 text-gray-700 sm:mt-1">
+													Click for more photos
+												</p>
+											</div>
+										</div>
+									</div>
+								</a>
 							{/each}
 						{:else}
 							<div class="flex items-center justify-center bg-slate-100">
