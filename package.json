@@ -20,7 +20,7 @@
 		"@sanity/eslint-config-studio": "^2.0.1",
 		"@sveltejs/adapter-auto": "^2.0.1",
 		"@sveltejs/adapter-vercel": "^2.4.3",
-		"@sveltejs/kit": "^1.16.0",
+		"@sveltejs/kit": "1.15.10",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@types/react": "^18.2.5",
 		"@types/styled-components": "^5.1.26",
